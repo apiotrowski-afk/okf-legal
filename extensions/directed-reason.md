@@ -1,7 +1,8 @@
 # Racja kierunkowa jako jednostka wyszukiwania
 ## Propozycja sekcji do OKF-Legal (rozszerzenie §3.1)
 
-*Draft do dyskusji środowiskowej. Sierpień 2026.*
+*Draft do dyskusji środowiskowej. Sierpień 2026.
+English readers: [`directed-reason.en.md`](./directed-reason.en.md).*
 
 ---
 

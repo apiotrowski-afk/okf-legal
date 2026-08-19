@@ -42,8 +42,16 @@ Built from two independent production systems, a Polish case-law corpus
 (~1,100 judgments, ~135k reasoning atoms) and an open-source contract-drafting
 skill, [commercial-legal-pl](https://github.com/apiotrowski-afk/commercial-legal-pl),
 that converged on the same structures without a shared design. Apache 2.0.
-Full specification, evidence, and prior-art review (currently in Polish) live
-in [`SPEC.md`](./SPEC.md) and [`extensions/`](./extensions/).
+
+**Full read in English:** [`SPEC.en.md`](./SPEC.en.md) (the condensed
+specification — type vocabulary, frontmatter fields, consumption rules,
+empirical evidence table) and
+[`extensions/directed-reason.en.md`](./extensions/directed-reason.en.md)
+(the argument for why a directed reason, not a document or a chunk, has to
+be the retrieval unit — prior art, evidence, and the "factor X" section on
+what statistics and categories structurally destroy). The Polish originals
+(`SPEC.md`, `extensions/directed-reason.md`) are normative; the English
+versions are condensed and section-numbered to match them 1:1.
 
 ## Po co to publikujemy
 
@@ -71,8 +79,10 @@ LLM-wiki/OKF/RAG dziś prawie w całości mówi o common law i języku angielski
 
 | Plik | Co zawiera |
 |---|---|
-| [`SPEC.md`](./SPEC.md) | Główna specyfikacja: słownik typów konceptów, jednostka pod-dokumentowa (atom), rozszerzenia frontmattera, relacje typowane z kierunkiem, reguły konsumpcji anty-halucynacyjne, zdolności analityczne, konformancja. |
+| [`SPEC.md`](./SPEC.md) | Główna specyfikacja (normatywna, PL): słownik typów konceptów, jednostka pod-dokumentowa (atom), rozszerzenia frontmattera, relacje typowane z kierunkiem, reguły konsumpcji anty-halucynacyjne, zdolności analityczne, konformancja. |
+| [`SPEC.en.md`](./SPEC.en.md) | Skrócona wersja `SPEC.md` po angielsku, numeracja sekcji 1:1 ze spec-em PL. |
 | [`extensions/directed-reason.md`](./extensions/directed-reason.md) | Rozwinięcie §3.1 — **racja kierunkowa** (directed reason) jako jednostka retrievalu: zakotwiczenie wobec Chen i in. (*Dense X Retrieval*), formalna definicja, dowód empiryczny, i sekcja o granicach tego, co daje się policzyć i skategoryzować w prawie. |
+| [`extensions/directed-reason.en.md`](./extensions/directed-reason.en.md) | Wersja powyższego po angielsku. |
 | [`extensions/prior-art-and-lift-metric.md`](./extensions/prior-art-and-lift-metric.md) | Przegląd prior art w legal NLP (rhetorical role labeling, argument mining, precedent treatment classification) + propozycja rozszerzenia reguły R-METODA o lift ponad bazę zamiast surowego odsetka, z doświadczenia publikacji popularyzacyjnej opartej na korpusie. |
 
 ## Status i jak dołączyć

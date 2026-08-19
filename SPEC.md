@@ -1,5 +1,8 @@
 # OKF-Legal — profil prawniczy nad Open Knowledge Format
 
+*English readers: a condensed, section-numbered translation is in
+[`SPEC.en.md`](./SPEC.en.md).*
+
 **Wersja: 1.0 — pierwsza wersja publiczna** · Sierpień 2026
 
 Profil rozszerzający [Open Knowledge Format (OKF)](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf)
