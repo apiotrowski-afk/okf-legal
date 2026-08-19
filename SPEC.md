@@ -198,7 +198,9 @@ Dowód (empiria A): w ślepym teście trafności (sędzia-model nieświadomy tor
 retrieval po **atomach** dawał odpowiedź „wprost" na 75% pytań praktycznych i
 80% pytań brzegowych („podaj racje sądów za tezą X"), podczas gdy retrieval po
 klasycznych **chunkach** dokumentu — odpowiednio 45% i 30%. Chunk opowiada
-okolicę tematu; atom odpowiada na pytanie.
+okolicę tematu; atom odpowiada na pytanie. Test przeprowadzony na wczesnym
+przekroju korpusu (~25 tys. atomów); korpus produkcyjny urósł od tego czasu
+do ~135 tys. atomów (zgodnie z liczbą w README i Załączniku C).
 
 Profil wprowadza więc opcjonalny poziom atomu jako osobne koncepty:
 
@@ -380,8 +382,9 @@ klauzul (empiria B).
 | -------------------- | --------------------------------------------------------------- | -------------------------------------------------------------- |
 | `wynik`              | `korzystny-konsument` \| `korzystny-bank` \| `mieszany` \| …    | Kierunek rozstrzygnięcia zagadnienia — bez tego „racja" nie ma strony. |
 | `waga`               | `decydujaca` \| `wspierajaca` \| `pomocnicza`                   | Hierarchia argumentów w wywodzie.                              |
-| `tryb`               | `ratio` \| `obiter` \| `ewentualny`                             | Czy argument był nośny dla wyroku, czy uboczny.                |
+| `tryb`               | `ratio` \| `obiter` \| `ewentualny` \| `referowana`             | Czy argument był nośny dla wyroku, uboczny, czy jedynie zreferowany bez oceny sądu. |
 | `instancja-zrodlowa` | `I` \| `II`                                                     | Czy racja pochodzi z rozumowania sądu I instancji (ryzyko, że sąd odwoławczy je odwrócił). |
+| `zrodlo-wypowiedzi`  | `sad` (domyślnie) \| `strona-powodowa` \| `strona-pozwana` \| `sad-nizszej-instancji` \| `bieglysadowy` | Kto faktycznie wypowiedział tę rację — odróżnia rozumowanie sądu od zreferowanego stanowiska strony. |
 
 > Dlaczego to jest rdzeń, nie ozdobnik (empiria A): filtr „podaj **wygrane
 > konsumenta**, bez *obiter*, bez racji z I instancji odwróconych w apelacji"
@@ -389,6 +392,20 @@ klauzul (empiria B).
 > repliki procesowej taki filtr dał najczystszą amunicję kontrargumentacyjną;
 > goła semantyka bez pól wyniku myliła linie za i przeciw. Te cztery pola to
 > różnica między „wyszukiwarką po treści" a „wyszukiwarką po rozstrzygnięciu".
+
+> **`referowana` + `zrodlo-wypowiedzi` — dodane po incydencie produkcyjnym
+> (empiria A).** Audyt na tekście źródłowym wykrył **fantomową ścieżkę**:
+> CBIT zbudowany z argumentu **z apelacji banku**, wyekstrahowany jako
+> „decydująca racja sądu" z `tryb: ratio` i `wynik: korzystny-konsument` —
+> sąd tego argumentu w ogóle nie oceniał. Przyczyna była systemowa: `Racja`
+> domyślnie oznacza rozumowanie sądu, a schemat nie miał wartości ani pola na
+> „to jest cudza wypowiedź, tylko zreferowana". Naprawa (gate pochodzenia:
+> kotwica atomu musi leżeć w sekcji oceny sądu, nie w sekcji stanowisk stron)
+> jest deterministyczna i produkcyjna, ale schemat profilu jej dotąd nie
+> nazywał — `tryb: referowana` + `zrodlo-wypowiedzi` to właśnie ta nazwa.
+> Konsekwencja dla konsumenta: atom z `tryb: referowana` **nie powinien** być
+> prezentowany jako podstawa rozstrzygnięcia bez jawnego zaznaczenia, że to
+> stanowisko strony, nie sądu.
 
 **Dla klauzul umownych (`KlauzulaUmowna`).** Poniższe pola nie są projektem —
 to **zrzut z produkcyjnej bazy 21 kategorii klauzul** systemu B (frontmatter
@@ -952,6 +969,7 @@ wyciąga jako uzasadnienie decyzji projektowych.
 | Poziom atomu (nie tylko dokument) | §3.1 | trafność „wprost": atomy 75–80% vs chunki 30–45% (ślepy sędzia) | A |
 | Silnik ≠ przewaga; liczy się struktura | — | recall@10 = 1.00 identyczny dla exact/pgvector/Qdrant; różnice tylko w latencji | A |
 | Pola wyniku na atomie (`wynik`/`waga`/`tryb`/`instancja`) | §4.5 | filtr „wygrane konsumenta bez obiter/I-inst." dał najczystszą amunicję do repliki; goła semantyka myliła strony | A |
+| `tryb: referowana` + `zrodlo-wypowiedzi` | §4.5 | fantomowa ścieżka: argument z apelacji banku wyekstrahowany jako „decydująca racja sądu" — gate pochodzenia (kotwica w sekcji oceny sądu, nie stanowisk stron) wdrożony produkcyjnie po incydencie | A |
 | `data-orzeczenia` obowiązkowa dla filtra czasu | §4.2 | linia zmienia się po TSUE C-472/23; brak daty = pytanie nieodpowiadalne | A |
 | `sygnatura` + `organ` (nie sama sygnatura) | §4.1 | kolizje sygnatur już w korpusie ~1 100 wyroków | A |
 | R-NIEWIEM (próg pewności) | §6 | nieistniejąca teza → sim ≈ 0,78, jak realne trafienia | A |
