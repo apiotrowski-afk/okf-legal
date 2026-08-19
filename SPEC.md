@@ -33,18 +33,21 @@ i o kilkanaście miesięcy od siebie:
 | --- | --- | --- | --- |
 | **A. Korpus orzeczniczy SKD** | orzecznictwo (sankcja kredytu darmowego) | ~1 100 wyroków w korpusie; setki rozpisanych na jednostki rozumowania, ~25 tys. atomów, rejestr ~500 zagadnień ze ~170 osiami spornymi | pipeline ekstrakcji + Postgres/pgvector |
 | **B. Skill umów B2B** | umowy handlowe (IT, IP, body leasing) | 21 kategorii klauzul, baza wzorców z frontmatterem, 11 reguł operacyjnych + 12 „Złotych Reguł" | markdown skill (Apache 2.0, publiczny: `commercial-legal-pl`) |
+| **E. Baza wiedzy AI Act (prawo UE)** | wersjonowana treść aktów prawnych (AI Act + rozporządzenia zmieniające) | ~40 jednostek redakcyjnych zaktualizowanych po jednej konsolidacji, historia wersji per przepis | Postgres, ten sam stack co A, odrębna domena i odrębny mechanizm wersjonowania (nowelizacja jako zdarzenie zamykające starą wersję jednostki) |
 
 System A to baza danych z embeddingami; system B to zestaw plików markdown
-czytanych przez model językowy. Mimo skrajnie różnych nośników oba wykształciły
-te same struktury: **jednostkę pod-dokumentową z cytatem-kotwicą**, frontmatter
-z polami domenowymi (`type`, `tags`, poziom ryzyka, zależności), relacje
-typowane i — co najważniejsze — **twarde reguły konsumpcji** (weryfikacja
-cytatu, próg pewności, odporność na instrukcje w analizowanym materiale).
-Żadna z tych struktur nie była projektowana z góry; każda powstała jako
-odpowiedź na zmierzony błąd. Ta zbieżność jest głównym argumentem, że profil
-trafia w realną strukturę problemu, a nie w preferencję jednego autora.
+czytanych przez model językowy; system E to trzeci, wewnętrzny system —
+konsolidacja tekstu jednolitego aktów prawnych na tym samym stacku co A, ale
+z niezależnie odkrytą potrzebą (§4.2). Mimo skrajnie różnych nośników A i B
+wykształciły te same struktury: **jednostkę pod-dokumentową z cytatem-kotwicą**,
+frontmatter z polami domenowymi (`type`, `tags`, poziom ryzyka, zależności),
+relacje typowane i — co najważniejsze — **twarde reguły konsumpcji**
+(weryfikacja cytatu, próg pewności, odporność na instrukcje w analizowanym
+materiale). Żadna z tych struktur nie była projektowana z góry; każda powstała
+jako odpowiedź na zmierzony błąd. Ta zbieżność jest głównym argumentem, że
+profil trafia w realną strukturę problemu, a nie w preferencję jednego autora.
 
-Odwołania „(empiria A/B)" w dalszej części wskazują, który system dostarcza
+Odwołania „(empiria A/B/E)" w dalszej części wskazują, który system dostarcza
 dowodu dla danej decyzji.
 
 **Konwergencja zewnętrzna (D — sierpień 2026).** Niezależny komercyjny system
@@ -278,8 +281,9 @@ opisuje koncept* ≠ *w jakim oknie norma obowiązuje*.
 
 | Pole               | Znaczenie                                                              |
 | ------------------ | ---------------------------------------------------------------------- |
-| `obowiazuje-od`    | Data wejścia normy w życie (ISO 8601).                                 |
-| `obowiazuje-do`    | Data utraty mocy / zmiany. Brak = obowiązuje bezterminowo.             |
+| `obowiazuje-od`    | Data, od której TA WERSJA tekstu jednostki jest aktualna (ISO 8601).   |
+| `obowiazuje-do`    | Data utraty mocy / zmiany tej wersji. Brak = obowiązuje bezterminowo.  |
+| `stosuje-sie-od`   | *(opcjonalne)* Data, od której norma faktycznie ma zastosowanie do zdarzeń/postępowań — gdy różni się od `obowiazuje-od` (§ niżej). |
 | `stan-prawny-na`   | Data, na którą opis w treści odzwierciedla stan prawny.                |
 | `data-orzeczenia`  | Dla `Orzeczenie` i atomów — data wydania.                              |
 
@@ -290,6 +294,31 @@ opisuje koncept* ≠ *w jakim oknie norma obowiązuje*.
 > pierwotnie **nie miał** daty na poziomie atomu; brak wykrył dopiero test
 > brzegowy i została dołożona jako kolumna z indeksem. `data-orzeczenia` na
 > atomie = warunek konieczny filtra intertemporalnego (§6).
+
+> **`stosuje-sie-od` — odróżnienie „aktualny tekst" od „norma już
+> obowiązuje w praktyce" (empiria E — patrz §0.1).** `obowiazuje-od` odpowiada na pytanie
+> „czy TO jest bieżąca wersja jednostki", nie na pytanie „czy ta norma już
+> wiąże". Dla zwykłej nowelizacji te dwie daty są tożsame — nowa wersja
+> wchodzi w życie i od razu się stosuje. **Nie zawsze tak jest**: akty
+> z odroczonym/wielostopniowym stosowaniem (typowo duże rozporządzenia UE)
+> ustanawiają dla jednego przepisu inną datę wejścia w życie tekstu i inną
+> (czasem kilka, per fragment materii) datę rozpoczęcia stosowania. Dowód
+> wprost z produkcji: po konsolidacji AI Act z rozporządzeniem zmieniającym
+> (Digital Omnibus, 2026), art. 113 dostał `obowiazuje-od: 2026-07-27` —
+> to data, od której TEN tekst artykułu jest aktualny — ale sam tekst
+> ustanawia rozstrzelony harmonogram: rozdziały I–II stosuje się od
+> 2.02.2025, art. 102–110 od 27.07.2026, sekcje 1–3 rozdziału III od
+> 2.12.2027 albo 2.08.2028 zależnie od kategorii ryzyka systemu AI. Żadna
+> pojedyncza data w tym artykule nie odpowiada uczciwie na pytanie „czy ten
+> obowiązek już wiąże" — bo odpowiedź zależy od tego, KTÓREGO fragmentu
+> przepisu pyta konsument. Profil **nie** rozbija tego dalej na strukturę per
+> fragment (to byłaby ontologia rozdmuchana ponad dowód — harmonogram
+> zostaje częścią treści, czytelną dla człowieka i modelu). `stosuje-sie-od`
+> jest przeznaczone dla prostszego, częstszego przypadku: gdy CAŁA jednostka
+> ma jedną, jednolitą datę rozpoczęcia stosowania różną od daty wejścia
+> w życie tekstu. Gdy stosowanie jest rozstrzelone per fragment (jak wyżej),
+> pole zostaje puste, a R-CZAS (§6) wymaga sygnalizacji niepewności zamiast
+> zgadywania, którą datę podać.
 
 Dla konceptów w trybie `zewnetrzne` (§4.4) pola `obowiazuje-od/do` są jedynie
 snapshotem — autorytatywny status pochodzi z resolvera, nie z bundla.
@@ -639,7 +668,13 @@ uznaniowe.
   dzień **D**" uznaje `Przepis`/`AktPrawny` za obowiązujący, gdy `obowiazuje-od ≤ D`
   oraz (`obowiazuje-do` nieobecne **lub** `≥ D`). Dla orzecznictwa: filtr po
   `data-orzeczenia`, gdy pytanie dotyczy „aktualnej linii" (empiria A: przełom
-  C-472/23).
+  C-472/23). **„Aktualny tekst" ≠ „norma już wiąże" (§4.2).** Gdy pytanie brzmi
+  „czy ten obowiązek już się stosuje" (nie „jak dziś brzmi przepis"), konsument
+  używa `stosuje-sie-od`, jeśli obecne — nie `obowiazuje-od`. Gdy `stosuje-sie-od`
+  jest nieobecne, a treść jednostki wskazuje na rozstrzelony/wielostopniowy
+  harmonogram stosowania (typowo duże akty UE), konsument **sygnalizuje
+  niepewność** zamiast przyjmować `obowiazuje-od` za datę stosowania — to ta sama
+  reguła co R-BRAK, zastosowana do rozróżnienia dwóch dat, nie tylko ich braku.
 - **R-CYTAT · Weryfikowalność treści względem źródła.** Fragment ujęty w
   cudzysłów jako cytat przepisu lub orzeczenia **musi** dać się zlokalizować w
   źródle (dopuszczalna tolerancja białych znaków). Nie da się → oznacz
@@ -971,6 +1006,7 @@ wyciąga jako uzasadnienie decyzji projektowych.
 | Pola wyniku na atomie (`wynik`/`waga`/`tryb`/`instancja`) | §4.5 | filtr „wygrane konsumenta bez obiter/I-inst." dał najczystszą amunicję do repliki; goła semantyka myliła strony | A |
 | `tryb: referowana` + `zrodlo-wypowiedzi` | §4.5 | fantomowa ścieżka: argument z apelacji banku wyekstrahowany jako „decydująca racja sądu" — gate pochodzenia (kotwica w sekcji oceny sądu, nie stanowisk stron) wdrożony produkcyjnie po incydencie | A |
 | `data-orzeczenia` obowiązkowa dla filtra czasu | §4.2 | linia zmienia się po TSUE C-472/23; brak daty = pytanie nieodpowiadalne | A |
+| `stosuje-sie-od` osobno od `obowiazuje-od` | §4.2, §6 | konsolidacja AI Act ↔ Digital Omnibus: art. 113 ma jedną datę aktualności tekstu (27.07.2026) i rozstrzelony harmonogram stosowania per rozdział (2.02.2025 / 27.07.2026 / 2.12.2027 / 2.08.2028) | E |
 | `sygnatura` + `organ` (nie sama sygnatura) | §4.1 | kolizje sygnatur już w korpusie ~1 100 wyroków | A |
 | R-NIEWIEM (próg pewności) | §6 | nieistniejąca teza → sim ≈ 0,78, jak realne trafienia | A |
 | R-CYTAT (verbatim gate) | §6 | jakość produkcyjna dopiero po audycie na tekście; niezweryfikowany cytat = błąd | A, B |
