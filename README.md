@@ -17,6 +17,34 @@ przez tych samych autorów — baza orzecznictwa i skill do redakcji umów
 > uprawnioną osobę. To warstwa reprezentacji *wiedzy o prawie*, nie publikator
 > aktów.
 
+## English summary
+
+**OKF-Legal** is a legal-domain profile over Google's [Open Knowledge Format
+(OKF)](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf) —
+a proposal for representing legal knowledge (case law, statutes, contract
+clauses) as markdown files an LLM can consume directly, without a
+vendor-specific pipeline.
+
+Its central idea is the **directed reason**: a sub-document unit for a single
+argument or holding, carrying a verbatim source quote, its direction (which
+side it favors), its procedural weight (*ratio decidendi* vs. *obiter
+dictum*), the originating court instance, and its position in the court's
+reasoning. In a blind retrieval test (30 questions, a model judge unaware of
+which method produced each answer), retrieval over these units answered
+"directly" 75–80% of questions, vs. 30–45% for standard document chunks.
+
+The profile also specifies hard anti-hallucination consumption rules: a quote
+must be locatable verbatim in its source, a statistic must carry its sample
+size and computation date, and a nearest-neighbor search result is never
+treated as evidence that a matching precedent actually exists.
+
+Built from two independent production systems, a Polish case-law corpus
+(~1,100 judgments, ~135k reasoning atoms) and an open-source contract-drafting
+skill, [commercial-legal-pl](https://github.com/apiotrowski-afk/commercial-legal-pl),
+that converged on the same structures without a shared design. Apache 2.0.
+Full specification, evidence, and prior-art review (currently in Polish) live
+in [`SPEC.md`](./SPEC.md) and [`extensions/`](./extensions/).
+
 ## Po co to publikujemy
 
 OKF opisuje, jak reprezentować wiedzę jako przenośne pliki markdown, które
